@@ -36,6 +36,7 @@ jobs:
       with:
         repository: epimorphics/nrw-ansible-deployment
         ref: main
+        token: "${{ secrets.EPI_DEPLOY_SSH_KEY }}"
     - run: |
         ls -l
         ls -l ansible
