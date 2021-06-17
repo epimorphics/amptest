@@ -40,6 +40,7 @@ jobs:
         ls -l
         ls -l ansible
         ls -l ansible/group_vars
+        env
 
 
 
