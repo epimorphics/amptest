@@ -34,3 +34,4 @@ jobs:
         repository: epimorphics/nrw-ansible-deployment
         ref: main
         path: nrw-ansible-deployment
+        token: "${{ secrets.GIT_REPOSITORY_FULL_ACCESS_PAT }}"
