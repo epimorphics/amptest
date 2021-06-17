@@ -33,3 +33,4 @@ jobs:
       with:
         repository: epimorphics/nrw-ansible-deployment
         ref: main
+        path: nrw-ansible-deployment
