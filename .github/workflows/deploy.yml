@@ -1,0 +1,45 @@
+name: Mapped deployment
+on:
+  push: {}
+jobs:
+  publish:
+    name: mapped-deployment
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: "Check for mapped deployment"
+      id: mapper
+      uses: epimorphics/deployment-mapper@1.2
+      with:
+        ref: "${{github.ref}}"
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.BUILD_NRW_AWS_SECRET_ACCESS_KEY }}
+        aws-region: "${{ steps.mapper.outputs.region }}"
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1   
+    - name: "Build and push image"
+      if: steps.mapper.outputs.image != ''
+      uses: epimorphics/mapped-deployment-action@1.3.8
+      with:
+        image: "${{ steps.mapper.outputs.image }}"
+        region: "${{ steps.mapper.outputs.region }}"
+        buildArgs: "SSH_KEY=${{ secrets.EPI_DEPLOY_SSH_KEY }}"
+  deploy:
+    name: ansible-deployment
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        repository: epimorphics/nrw-ansible-deployment
+    - run: |
+        ls -l
+        ls -l ansible
+        ls -l ansible/group_vars
+
+
+
+
