@@ -28,21 +28,8 @@ jobs:
         image: "${{ steps.mapper.outputs.image }}"
         region: "${{ steps.mapper.outputs.region }}"
         buildArgs: "SSH_KEY=${{ secrets.EPI_DEPLOY_SSH_KEY }}"
-  deploy:
-    name: ansible-deployment
-    runs-on: ubuntu-20.04
-    steps:
-    - uses: actions/checkout@v2
+    - name: ansible-deployment
+      uses: actions/checkout@v2
       with:
         repository: epimorphics/nrw-ansible-deployment
         ref: main
-        token: ${{ secrets.GIT_REPOSITORY_ACCESS_PAT }}
-    - run: |
-        ls -l
-        ls -l ansible
-        ls -l ansible/group_vars
-        env
-
-
-
-
