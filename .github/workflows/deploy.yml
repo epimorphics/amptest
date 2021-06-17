@@ -36,7 +36,7 @@ jobs:
       with:
         repository: epimorphics/nrw-ansible-deployment
         ref: main
-#       token: "${{ secrets.GIT_REPOSITORY_ACCESS_PAT }}"
+        token: ${{ secrets.GIT_REPOSITORY_ACCESS_PAT }}
     - run: |
         ls -l
         ls -l ansible
