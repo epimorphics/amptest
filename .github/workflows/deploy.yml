@@ -67,7 +67,7 @@ jobs:
             ProxyJump nrw-bastion
     - name: Ansible Vault Secret
       shell: bash
-      run: echo ${{ secrets.ANSIBLE_VAULT_PASSWORD }} > nrw-ansible-deployment/ansible/.secrets/default
+      run: echo ${{ secrets.ANSIBLE_VAULT_PASSWORD }} > nrw-ansible-deployment/ansible/.secret/default
     - name: Deploy via Ansible
       shell: bash
       run: | 
