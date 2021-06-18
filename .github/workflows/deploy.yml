@@ -38,7 +38,7 @@ jobs:
 #     run:  make image publish
       run: |
         docker build --tag ${{ steps.mapper.outputs.image }}:${{ steps.gitinfo.outputs.tag }} .
-        docker push -${{ steps.mapper.outputs.image }}:${{ steps.gitinfo.outputs.tag }}
+        docker push ${{ steps.mapper.outputs.image }}:${{ steps.gitinfo.outputs.tag }}
       shell: bash
 
   deploy:
