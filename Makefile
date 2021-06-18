@@ -14,7 +14,11 @@ REPO?=${ECR}/${IMAGE}
 all: publish
 
 image:
+	@echo Building ${REPO}:${TAG} ...
 	@docker build --tag ${REPO}:${TAG} .
+	@echo Done.
 
 publish: image
+	@echo Publishing image: ${REPO}:${TAG} ...
 	@docker push ${REPO}:${TAG} 2>&1
+	@echo Done.
