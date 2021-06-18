@@ -17,4 +17,5 @@ image:
 	docker build --tag ${REPO}:${TAG} .
 
 publish: image
-	docker push ${REPO}:${TAG}
+	aws ecr describe-repositories --region ${AWS_REGION} --repository-names ${IMAGE}
+	docker push ${REPO}:${TAG} 2>&1
