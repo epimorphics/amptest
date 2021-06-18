@@ -1,5 +1,6 @@
 name: Mapped deployment
 on:
+# workflow_dispatch: {}
   push: {}
 jobs:
   publish:
@@ -21,10 +22,10 @@ jobs:
     - name: "Login to Amazon ECR"
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1   
-#   - name: "Create ECR"
-#     uses: epimorphics/create-ecr-action@0.1
-#     with:
-#       image: ${{ steps.mapper.outputs.image }}
+    - name: "Create ECR"
+      uses: epimorphics/create-ecr-action@0.2
+      with:
+        image: ${{ steps.mapper.outputs.image }}
 #   - name: "Publish image"
 #     run: ACCOUNT=${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }} IMAGE=${{ steps.mapper.outputs.image }} TAG=${{ }} make image publish
 #     shell: bash
