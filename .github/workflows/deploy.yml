@@ -13,22 +13,15 @@ jobs:
       uses: epimorphics/deployment-mapper@1.2
       with:
         ref: "${{github.ref}}"
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v1
+    - name: "Create ECR"
+      uses: epimorphics/github-actions/create-ecr-action@0.5
       with:
         aws-access-key-id: ${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.BUILD_NRW_AWS_SECRET_ACCESS_KEY }}
-        aws-region: "${{ steps.mapper.outputs.region }}"
-    - name: "Login to Amazon ECR"
-      id: login-ecr
-      uses: aws-actions/amazon-ecr-login@v1   
-    - name: "Create ECR"
-      uses: epimorphics/github-actions/create-ecr-action@0.4
-      with:
         image: ${{ steps.mapper.outputs.image }}
     - name: "Get Git Tag"
       id: gitinfo
-      uses: epimorphics/github-actions/git-info@0.4
+      uses: epimorphics/github-actions/git-info@0.5
     - name: "Publish image"
       env:
         ACCOUNT: ${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }}
