@@ -18,4 +18,5 @@ image:
 
 publish: image
 	aws ecr describe-repositories --region ${AWS_REGION} --repository-names ${IMAGE}
+	docker pull ${REPO}:SNAPSHOT 2>&1
 	docker push ${REPO}:${TAG} 2>&1
