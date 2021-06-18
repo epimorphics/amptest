@@ -66,11 +66,14 @@ jobs:
             StrictHostKeyChecking no
             UserKnownHostsFile /dev/null
             ProxyJump nrw-bastion
+    - name: SSH Setup
+      shell: bash
+      run: | 
+        cat ~/.ssh/config
+        cat ~/.ssh/bastion
     - name: Deploy via Ansible
       shell: bash
       run: | 
-        ls
-        ls -l ~/.ssh
-        ssh nrw_monitor hostname
+        ssh nrw-bastion hostname
 
 
