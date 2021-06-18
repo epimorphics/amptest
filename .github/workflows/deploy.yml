@@ -12,7 +12,7 @@ jobs:
       with:
         aws-access-key-id: ${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.BUILD_NRW_AWS_SECRET_ACCESS_KEY }}
-        aws-region: "${{ steps.mapper.outputs.region }}"
+        aws-region: eu-west-1
     - name: "Login to Amazon ECR"
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1   
@@ -44,6 +44,7 @@ jobs:
       shell: bash
 
   deploy:
+    name: Ansible Deployment
     needs: publish
     runs-on: ubuntu-20.04
     steps:
