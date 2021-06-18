@@ -58,9 +58,11 @@ jobs:
         config: |
           Host nrw-bastion
             User ec2-user
+            IdentityFile ~/.ssh/bastion
             hostname %h.epimorphics.net
           Host nrw_* 10.10.11.*
             User ec2-user
+            IdentityFile ~/.ssh/bastion
             StrictHostKeyChecking no
             UserKnownHostsFile /dev/null
             ProxyJump nrw-bastion
