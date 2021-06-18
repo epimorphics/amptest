@@ -43,7 +43,8 @@ jobs:
       run:  make image publish
       shell: bash
 
-   deploy:
+  deploy:
+    steps:
     - name: ansible-deployment
       needs: publish
       uses: actions/checkout@v2
