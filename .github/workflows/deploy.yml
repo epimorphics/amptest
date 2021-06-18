@@ -37,8 +37,8 @@ jobs:
         TAG: ${{ steps.gitinfo.outputs.tag }}
 #     run:  make image publish
       run: |
-        docker build --tag ${{ steps.mapper.outputs.image }}:${{ steps.gitinfo.outputs.tag }} .
-        docker push ${{ steps.mapper.outputs.image }}:${{ steps.gitinfo.outputs.tag }}
+        docker build --tag ${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }}.dkr.ecr.eu-west-1.amazonaws.com/${{ steps.mapper.outputs.image }}:${{ steps.gitinfo.outputs.tag }} .
+        docker push ${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }}.dkr.ecr.eu-west-1.amazonaws.com/${{ steps.mapper.outputs.image }}:${{ steps.gitinfo.outputs.tag }}
       shell: bash
 
   deploy:
