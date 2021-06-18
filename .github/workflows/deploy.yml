@@ -44,9 +44,9 @@ jobs:
       shell: bash
 
   deploy:
+    needs: publish
     steps:
     - name: ansible-deployment
-      needs: publish
       uses: actions/checkout@v2
       with:
         repository: epimorphics/nrw-ansible-deployment
