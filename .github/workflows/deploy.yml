@@ -18,16 +18,17 @@ jobs:
         aws-access-key-id: ${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.BUILD_NRW_AWS_SECRET_ACCESS_KEY }}
         aws-region: "${{ steps.mapper.outputs.region }}"
-    - name: Login to Amazon ECR
+    - name: "Login to Amazon ECR"
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1   
-    - name: "Build and push image"
-      if: steps.mapper.outputs.image != ''
-      uses: epimorphics/mapped-deployment-action@1.3.8
+    - name: "Create ECR"
+      uses: epimorphics/create-ecr-action@0.1
       with:
-        image: "${{ steps.mapper.outputs.image }}"
-        region: "${{ steps.mapper.outputs.region }}"
-        buildArgs: "SSH_KEY=${{ secrets.EPI_DEPLOY_SSH_KEY }}"
+        image: ${{ steps.mapper.outputs.image }}
+    - name: "Publish image"
+      if: steps.mapper.outputs.image != ''
+      run: |
+        ACCOUNT=${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }} IMAGE=${{ steps.mapper.outputs.image }} TAG=${{ }} make image publish
     - name: ansible-deployment
       uses: actions/checkout@v2
       with:
