@@ -32,6 +32,9 @@ jobs:
       uses: epimorphics/github-actions/git-info@0.92
     - name: "Publish image"
       env:
+        AWS-ACCESS-KEY-ID: ${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }}
+        AWS-SECRET-ACCESS-KEY: ${{ secrets.BUILD_NRW_AWS_SECRET_ACCESS_KEY }}
+        AWS-REGION: eu-west-1
         ACCOUNT: ${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }}
         IMAGE: ${{ steps.mapper.outputs.image }}
         TAG: ${{ steps.gitinfo.outputs.tag }}
