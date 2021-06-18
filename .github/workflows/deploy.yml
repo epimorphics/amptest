@@ -32,13 +32,9 @@ jobs:
       uses: epimorphics/github-actions/git-info@0.92
     - name: "Publish image"
       env:
-        ACCOUNT: ${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }}
         IMAGE: ${{ steps.mapper.outputs.image }}
         TAG: ${{ steps.gitinfo.outputs.tag }}
-#     run:  make image publish
-      run: |
-        docker build --tag ${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }}.dkr.ecr.eu-west-1.amazonaws.com/${{ steps.mapper.outputs.image }}:${{ steps.gitinfo.outputs.tag }} .
-        docker push ${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }}.dkr.ecr.eu-west-1.amazonaws.com/${{ steps.mapper.outputs.image }}:${{ steps.gitinfo.outputs.tag }}
+      run:  make image publish
       shell: bash
 
   deploy:
