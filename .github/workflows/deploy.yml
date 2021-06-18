@@ -42,10 +42,32 @@ jobs:
     needs: publish
     runs-on: ubuntu-20.04
     steps:
-    - name: ansible-deployment
+    - name: Ansible deployment checkout
       uses: actions/checkout@v2
       with:
         repository: epimorphics/nrw-ansible-deployment
         ref: main
         path: nrw-ansible-deployment
         token: "${{ secrets.GIT_REPOSITORY_FULL_ACCESS_PAT }}"
+    - name: Install SSH keys
+      uses: shimataro/ssh-key-action@v2
+      with:
+        name: bastion
+        key: ${{ secrets.NRW_SSH_KEY }}
+        config: |
+          Host nrw-bastion
+            User ec2-user
+            hostname %h.epimorphics.net
+          Host nrw_* 10.10.11.*
+            User ec2-user
+            StrictHostKeyChecking no
+            UserKnownHostsFile /dev/null
+            ProxyJump nrw-bastion
+    - name: Deploy via Ansible
+      shell: bash
+      run: | 
+        ls
+        ls -l ~/.ssh
+        ssh nrw_monitor hostname
+
+
