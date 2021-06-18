@@ -3,8 +3,23 @@ on:
 # workflow_dispatch: {}
   push: {}
 jobs:
+  authenticate:
+    name: AWS Authentication
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.BUILD_NRW_AWS_SECRET_ACCESS_KEY }}
+        aws-region: "${{ steps.mapper.outputs.region }}"
+    - name: "Login to Amazon ECR"
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1   
+
   publish:
-    name: mapped-deployment
+    name: ECR Image Upload
+    needs: authenticate
     runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2
@@ -14,14 +29,12 @@ jobs:
       with:
         ref: "${{github.ref}}"
     - name: "Create ECR"
-      uses: epimorphics/github-actions/create-ecr-action@0.5
+      uses: epimorphics/github-actions/create-ecr-action@0.6
       with:
-        aws-access-key-id: ${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.BUILD_NRW_AWS_SECRET_ACCESS_KEY }}
         image: ${{ steps.mapper.outputs.image }}
     - name: "Get Git Tag"
       id: gitinfo
-      uses: epimorphics/github-actions/git-info@0.5
+      uses: epimorphics/github-actions/git-info@0.6
     - name: "Publish image"
       env:
         ACCOUNT: ${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }}
@@ -29,7 +42,10 @@ jobs:
         TAG: ${{ steps.gitinfo.outputs.tag }}
       run:  make image publish
       shell: bash
+
+   deploy:
     - name: ansible-deployment
+      needs: publish
       uses: actions/checkout@v2
       with:
         repository: epimorphics/nrw-ansible-deployment
