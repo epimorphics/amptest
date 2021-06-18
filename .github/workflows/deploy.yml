@@ -56,6 +56,7 @@ jobs:
         key: ${{ secrets.NRW_SSH_KEY }}
         known_hosts: unnecessary
         config: |
+          StrictHostKeyChecking no
           Host nrw-bastion
             User ec2-user
             IdentityFile ~/.ssh/bastion
@@ -63,7 +64,6 @@ jobs:
           Host nrw_* 10.10.11.*
             User ec2-user
             IdentityFile ~/.ssh/bastion
-            StrictHostKeyChecking no
             ProxyJump nrw-bastion
     - name: Deploy via Ansible
       shell: bash
