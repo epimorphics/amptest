@@ -65,6 +65,9 @@ jobs:
             User ec2-user
             IdentityFile ~/.ssh/bastion
             ProxyJump nrw-bastion
+    - name: Ansible Vault Secret
+      shell: bash
+      run: echo ${{ secrets.ANSIBLE_VAULT_PASSWORD }} > nrw-ansible-deployment/ansible/.secrets/default
     - name: Deploy via Ansible
       shell: bash
       run: | 
