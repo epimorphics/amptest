@@ -23,11 +23,18 @@ jobs:
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1   
     - name: "Create ECR"
-      uses: epimorphics/create-ecr-action@0.2
+      uses: epimorphics/create-ecr-action/create-ecr-action@0.3
       with:
         image: ${{ steps.mapper.outputs.image }}
+    - name: "Get Git Tag"
+      id: gitinfo
+      uses: epimorphics/create-ecr-action/git-info@0.3
     - name: "Publish image"
-      run: ACCOUNT=${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }} IMAGE=${{ steps.mapper.outputs.image }} TAG=${{ }} make image publish
+      env:
+        ACCOUNT: ${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }}
+        IMAGE: ${{ steps.mapper.outputs.image }}
+        TAG: ${{ steps.gitinfo.outputs.tag }}
+      run:  make image publish
       shell: bash
     - name: ansible-deployment
       uses: actions/checkout@v2
