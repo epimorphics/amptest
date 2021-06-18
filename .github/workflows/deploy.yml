@@ -68,6 +68,6 @@ jobs:
     - name: Deploy via Ansible
       shell: bash
       run: | 
-        ssh -vv nrw-bastion hostname
+        cd nrw-ansible-deployment/ansible && ansible -m setup monitor
 
 
