@@ -45,6 +45,7 @@ jobs:
 
   deploy:
     needs: publish
+    runs-on: ubuntu-20.04
     steps:
     - name: ansible-deployment
       uses: actions/checkout@v2
