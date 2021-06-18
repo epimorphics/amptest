@@ -27,8 +27,8 @@ jobs:
         image: ${{ steps.mapper.outputs.image }}
     - name: "Publish image"
       if: steps.mapper.outputs.image != ''
-      run: |
-        ACCOUNT=${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }} IMAGE=${{ steps.mapper.outputs.image }} TAG=${{ }} make image publish
+      run: ACCOUNT=${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }} IMAGE=${{ steps.mapper.outputs.image }} TAG=${{ }} make image publish
+      shell: bash
     - name: ansible-deployment
       uses: actions/checkout@v2
       with:
