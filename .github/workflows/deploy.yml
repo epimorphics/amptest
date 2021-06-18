@@ -54,6 +54,7 @@ jobs:
       with:
         name: bastion
         key: ${{ secrets.NRW_SSH_KEY }}
+        known_hosts: unnecessary
         config: |
           Host nrw-bastion
             User ec2-user
