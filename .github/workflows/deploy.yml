@@ -24,17 +24,18 @@ jobs:
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1   
     - name: "Create ECR"
-      uses: epimorphics/github-actions/create-ecr-action@0.7
+      uses: epimorphics/github-actions/create-ecr-action@0.8
       with:
         image: ${{ steps.mapper.outputs.image }}
     - name: "Get Git Tag"
       id: gitinfo
-      uses: epimorphics/github-actions/git-info@0.7
+      uses: epimorphics/github-actions/git-info@0.8
     - name: "Publish image"
       env:
         ACCOUNT: ${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }}
         IMAGE: ${{ steps.mapper.outputs.image }}
         TAG: ${{ steps.gitinfo.outputs.tag }}
+        TEST: ${{ steps.gitinfo.outputs.test }}
       run:  make image publish
       shell: bash
 

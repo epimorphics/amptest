@@ -14,7 +14,7 @@ REPO?=${ECR}/${IMAGE}
 all: publish
 
 image:
-	@[ -z "${TAG}" ] || docker build --tag ${REPO}:${TAG} .
+	docker build --tag ${REPO}:${TAG} .
 
 publish: image
-	@docker push ${REPO}:${TAG}
+	docker push ${REPO}:${TAG}
