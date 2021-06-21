@@ -79,9 +79,10 @@ jobs:
       run: | 
         mkdir ~/.aws
         echo "[nrw]" > ~/.aws/credentials
-        echo "region = eu-west-1" >> ~/.aws/credentials
-        echo "aws-access-key-id = ${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }}" >> ~/.aws/credentials
-        echo "aws-secret-access-key = ${{ secrets.BUILD_NRW_AWS_SECRET_ACCESS_KEY }}" >> ~/.aws/credentials
+        echo "aws-access-key-id=${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }}" >> ~/.aws/credentials
+        echo "aws-secret-access-key=${{ secrets.BUILD_NRW_AWS_SECRET_ACCESS_KEY }}" >> ~/.aws/credentials
+        echo "region=eu-west-1" >> ~/.aws/credentials
+        chmod 600 ~/.aws/credentials
     - name: Ansible Vault Secret
       shell: bash
       run: | 
