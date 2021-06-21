@@ -28,13 +28,13 @@ jobs:
       uses: aws-actions/amazon-ecr-login@v1   
 
     - name: "Create ECR"
-      uses: epimorphics/github-actions/create-ecr-action@1.03
+      uses: epimorphics/github-actions/create-ecr-action@1.04
       with:
         image: ${{ steps.mapper.outputs.image }}
 
     - name: "Get Git Tag"
       id: gitinfo
-      uses: epimorphics/github-actions/git-info@1.03
+      uses: epimorphics/github-actions/git-info@1.04
 
     - name: "Publish image"
       env:
@@ -51,7 +51,7 @@ jobs:
     steps:
 
     - name: Install Ansible
-      uses: epimorphics/github-actions/ansible@1.02
+      uses: epimorphics/github-actions/ansible@1.04
       with:
         aws_profile: nrw
         aws_access_key_id: ${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }}
