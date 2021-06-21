@@ -39,7 +39,7 @@ jobs:
 
   deploy:
     name: Ansible Deployment
-    needs: publish
+#   needs: publish
     runs-on: ubuntu-20.04
     steps:
     - name: Ansible deployment checkout
