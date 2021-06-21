@@ -79,7 +79,7 @@ jobs:
       run: | 
         ansible --version
         ls -l nrw-ansible-deployment/ansible/eu-west-1
-        ./eu-west-1/ec2.py --list
+        cd nrw-ansible-deployment/ansible && ./eu-west-1/ec2.py --list
         cd nrw-ansible-deployment/ansible && ansible -m setup monitor
 
 
