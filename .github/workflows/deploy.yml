@@ -51,13 +51,14 @@ jobs:
     steps:
 
     - name: Install Ansible
-      uses: epimorphics/github-actions/ansible@1.05
+      uses: epimorphics/github-actions/ansible@1.06
       with:
-        aws_profile: nrw
-        aws_access_key_id: ${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }}
-        aws_secret_access_key: ${{ secrets.BUILD_NRW_AWS_SECRET_ACCESS_KEY }}
-        aws_region: eu_west_1
-        host_prefix: nrw
+        aws-profile: nrw
+        aws-access-key-id: ${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.BUILD_NRW_AWS_SECRET_ACCESS_KEY }}
+        aws-region: eu_west_1
+        host-prefix: nrw
+        ssh-key: ${{ secrets.NRW_SSH_KEY }}
 
     - name: Ansible deployment checkout
       uses: actions/checkout@v2
