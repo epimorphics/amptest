@@ -65,6 +65,10 @@ jobs:
             User ec2-user
             IdentityFile ~/.ssh/bastion
             ProxyJump nrw-bastion
+    - name: Ansible
+      shell: bash
+      run: | 
+        sudo apt-get install ansible
     - name: Python Modules
       shell: bash
       run: | 
