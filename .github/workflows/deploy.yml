@@ -4,38 +4,38 @@ on:
   push: {}
 jobs:
 
-  publish:
-    name: ECR Image Upload
-    runs-on: ubuntu-20.04
-    steps:
-    - uses: actions/checkout@v2
-    - name: "Check for mapped deployment"
-      id: mapper
-      uses: epimorphics/deployment-mapper@1.2
-      with:
-        ref: "${{github.ref}}"
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.BUILD_NRW_AWS_SECRET_ACCESS_KEY }}
-        aws-region: eu-west-1
-    - name: "Login to Amazon ECR"
-      id: login-ecr
-      uses: aws-actions/amazon-ecr-login@v1   
-    - name: "Create ECR"
-      uses: epimorphics/github-actions/create-ecr-action@0.92
-      with:
-        image: ${{ steps.mapper.outputs.image }}
-    - name: "Get Git Tag"
-      id: gitinfo
-      uses: epimorphics/github-actions/git-info@0.92
-    - name: "Publish image"
-      env:
-        IMAGE: ${{ steps.mapper.outputs.image }}
-        TAG: ${{ steps.gitinfo.outputs.tag }}
-      run:  make image publish
-      shell: bash
+# publish:
+#   name: ECR Image Upload
+#   runs-on: ubuntu-20.04
+#   steps:
+#   - uses: actions/checkout@v2
+#   - name: "Check for mapped deployment"
+#     id: mapper
+#     uses: epimorphics/deployment-mapper@1.2
+#     with:
+#       ref: "${{github.ref}}"
+#   - name: Configure AWS Credentials
+#     uses: aws-actions/configure-aws-credentials@v1
+#     with:
+#       aws-access-key-id: ${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }}
+#       aws-secret-access-key: ${{ secrets.BUILD_NRW_AWS_SECRET_ACCESS_KEY }}
+#       aws-region: eu-west-1
+#   - name: "Login to Amazon ECR"
+#     id: login-ecr
+#     uses: aws-actions/amazon-ecr-login@v1   
+#   - name: "Create ECR"
+#     uses: epimorphics/github-actions/create-ecr-action@0.92
+#     with:
+#       image: ${{ steps.mapper.outputs.image }}
+#   - name: "Get Git Tag"
+#     id: gitinfo
+#     uses: epimorphics/github-actions/git-info@0.92
+#   - name: "Publish image"
+#     env:
+#       IMAGE: ${{ steps.mapper.outputs.image }}
+#       TAG: ${{ steps.gitinfo.outputs.tag }}
+#     run:  make image publish
+#     shell: bash
 
   deploy:
     name: Ansible Deployment
@@ -79,8 +79,8 @@ jobs:
       run: | 
         mkdir ~/.aws
         echo "[nrw]" > ~/.aws/credentials
-        echo "aws-access-key-id=${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }}" >> ~/.aws/credentials
-        echo "aws-secret-access-key=${{ secrets.BUILD_NRW_AWS_SECRET_ACCESS_KEY }}" >> ~/.aws/credentials
+        echo "aws_access_key_id=${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }}" >> ~/.aws/credentials
+        echo "aws_secret_access_key=${{ secrets.BUILD_NRW_AWS_SECRET_ACCESS_KEY }}" >> ~/.aws/credentials
         echo "region=eu-west-1" >> ~/.aws/credentials
         chmod 600 ~/.aws/credentials
     - name: Ansible Vault Secret
