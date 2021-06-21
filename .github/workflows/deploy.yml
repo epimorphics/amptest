@@ -51,7 +51,7 @@ jobs:
     steps:
 
     - name: Install Ansible
-      uses: epimorphics/github-actions/ansible@1.08
+      uses: epimorphics/github-actions/ansible@1.09
       with:
         aws-profile: nrw
         aws-access-key-id: ${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }}
