@@ -90,9 +90,7 @@ jobs:
     - name: Deploy via Ansible
       shell: bash
       run: | 
-        ansible --version
-        cat ~/.aws/credentials
         cd nrw-ansible-deployment/ansible && ./eu-west-1/ec2.py --list
-        cd nrw-ansible-deployment/ansible && ansible -m setup monitor
+#       cd nrw-ansible-deployment/ansible && ansible -m setup monitor
 
 
