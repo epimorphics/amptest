@@ -3,71 +3,39 @@ on:
 # workflow_dispatch: {}
   push: {}
 jobs:
-  ansible:
-    name: Ansible Installation
-    runs-on: ubuntu-20.04
-    steps:
-    - name: Install SSH keys
-      uses: shimataro/ssh-key-action@v2
-      with:
-        name: bastion
-        key: ${{ secrets.NRW_SSH_KEY }}
-        known_hosts: unnecessary
-        config: |
-          StrictHostKeyChecking no
-          Host nrw-bastion
-            User ec2-user
-            IdentityFile ~/.ssh/bastion
-            hostname %h.epimorphics.net
-          Host nrw_* 10.10.11.*
-            User ec2-user
-            IdentityFile ~/.ssh/bastion
-            ProxyJump nrw-bastion
-    - name: Ansible
-      shell: bash
-      run: | 
-        sudo apt-get install ansible
-    - name: Python Modules
-      shell: bash
-      run: | 
-        python -m pip install --upgrade pip
-        pip install boto
-    - name: AWS Credentials
-      shell: bash
-      run: | 
-        mkdir ~/.aws
-        echo "[aws]" > ~/.aws/credentials
-        echo "aws_access_key_id=${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }}" >> ~/.aws/credentials
-        echo "aws_secret_access_key=${{ secrets.BUILD_NRW_AWS_SECRET_ACCESS_KEY }}" >> ~/.aws/credentials
-        echo "region=eu-west-1" >> ~/.aws/credentials
-        chmod 600 ~/.aws/credentials
 
   publish:
     name: ECR Image Upload
     runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2
+
     - name: "Check for mapped deployment"
       id: mapper
       uses: epimorphics/deployment-mapper@1.2
       with:
         ref: "${{github.ref}}"
+
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
         aws-access-key-id: ${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.BUILD_NRW_AWS_SECRET_ACCESS_KEY }}
         aws-region: eu-west-1
+
     - name: "Login to Amazon ECR"
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1   
+
     - name: "Create ECR"
-      uses: epimorphics/github-actions/create-ecr-action@0.92
+      uses: epimorphics/github-actions/create-ecr-action@1.01
       with:
         image: ${{ steps.mapper.outputs.image }}
+
     - name: "Get Git Tag"
       id: gitinfo
-      uses: epimorphics/github-actions/git-info@0.92
+      uses: epimorphics/github-actions/git-info@1.01
+
     - name: "Publish image"
       env:
         IMAGE: ${{ steps.mapper.outputs.image }}
@@ -77,12 +45,19 @@ jobs:
 
 
   deploy:
-    needs: 
-      - ansible
-      - publish
+    needs: publish
     name: Ansible Deployment
     runs-on: ubuntu-20.04
     steps:
+
+    - name: Install Ansible
+      uses: epimorphics/github-actions/ansible@1.01
+        aws-profile: nrw
+        aws-access-key-id: ${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.BUILD_NRW_AWS_SECRET_ACCESS_KEY }}
+        aws-region: eu-west-1
+        host-prefx: nrw
+
     - name: Ansible deployment checkout
       uses: actions/checkout@v2
       with:
@@ -90,14 +65,16 @@ jobs:
         ref: main
         path: nrw-ansible-deployment
         token: "${{ secrets.GIT_REPOSITORY_FULL_ACCESS_PAT }}"
+
     - name: Ansible Vault Secret
       shell: bash
       run: | 
         mkdir nrw-ansible-deployment/ansible/.secret && echo ${{ secrets.ANSIBLE_VAULT_PASSWORD }} > nrw-ansible-deployment/ansible/.secret/default
+
     - name: Deploy via Ansible
       shell: bash
       run: | 
-        cd nrw-ansible-deployment/ansible && AWS_PROFILE=aws ./eu-west-1/ec2.py --list
+        cd nrw-ansible-deployment/ansible && AWS_PROFILE=nrw ./eu-west-1/ec2.py --list
 #       cd nrw-ansible-deployment/ansible && ansible -m setup monitor
 
 
