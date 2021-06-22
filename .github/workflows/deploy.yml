@@ -13,7 +13,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
       with:
-        path: image
+        path: build
 
     - name: "Check for mapped deployment"
       id: mapper
