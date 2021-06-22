@@ -42,12 +42,6 @@ jobs:
       run:  make image publish
       shell: bash
 
-    - name: "Cleanup workspace"
-      run: |
-        pwd
-        ls -la
-      shell: bash
-
 
   deploy:
     needs: publish
@@ -66,6 +60,10 @@ jobs:
         key: "${{ secrets.NRW_SSH_KEY }}"
         name: "${{ env.SSH_KEY_FILE }}" 
         known_hosts: unnesessary
+
+    - name: "SSH test"
+      run: ssh nrw_monitor hostname
+      shell: bash
 
     - name: Install Ansible
       uses: epimorphics/github-actions/ansible@1.33
