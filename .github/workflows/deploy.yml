@@ -6,7 +6,7 @@ jobs:
   Deploy:
     env:
       ANSIBLE_REPO: nrw-ansible-deployment
-      ANSIBLE_TAG: widgets
+      ANSIBLE_TAG: amptest
       AWS_ACCESS_KEY_ID: "${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }}"
       AWS_SECRET_ACCESS_KEY: "${{ secrets.BUILD_NRW_AWS_SECRET_ACCESS_KEY }}"
       AWS_REGION: "eu-west-1"
