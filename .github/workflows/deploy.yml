@@ -54,46 +54,15 @@ jobs:
       SSH_KEY_FILE: nrw.pem
 
     steps:
-    - name: Install SSH key
-      uses: shimataro/ssh-key-action@v2
-      with:
-        key: "${{ secrets.NRW_SSH_KEY }}"
-        name: "${{ env.SSH_KEY_FILE }}" 
-        known_hosts: unnesessary
-        config:
-          IdentityFile ~/.ssh/${{ env.SSH_KEY_FILE }}
-          StrictHostKeyChecking no
-          User ec2-user
-          Host nrw_bastion
-            hostname %h.epimorphics.net
-          Host nrw_* 10.*
-            ProxyJump nrw-bastion
-
-
-    - name: "SSH test"
-      run: ssh nrw_monitor hostname
-      shell: bash
-
     - name: Install Ansible
-      uses: epimorphics/github-actions/ansible@1.33
-
-    - name: Ansible Deployment Repository Checkout
-      id: deploy
-      uses: actions/checkout@v2
-      with:
-        repository: "epimorphics/${{ env.ANSIBLE_REPO }}"
-        ref: "main"
-        token: "${{ secrets.GIT_REPOSITORY_FULL_ACCESS_PAT }}"
-
-    - name: Ansible Deploy
-      uses: epimorphics/github-actions/ansible-deploy-tag@1.33
+      uses: epimorphics/github-actions/ansible@1.13
       with:
         aws-access-key-id: "${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }}"
         aws-secret-access-key: "${{ secrets.BUILD_NRW_AWS_SECRET_ACCESS_KEY }}"
         aws-region: "eu_west_1"
         host-prefix: "${{ env.HOST_PREFIX}}"
-        key-file: "${{ env.SSH_KEY_FILE }}" 
-        repo: "${{ env.ANSIBLE_REPO }}"
-        secret: "${{ secrets.ANSIBLE_VAULT_PASSWORD }}"
-        stage: "dev"
-        tag: "widgets"
+        ssh-key: "${{ secret.NRW_SSH_KEY }}"
+    - name: "SSH test"
+      run: ssh nrw_monitor hostname
+      shell: bash
+
