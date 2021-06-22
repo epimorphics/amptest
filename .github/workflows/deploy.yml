@@ -6,11 +6,14 @@ jobs:
   Deploy:
     env:
       ANSIBLE_REPO: nrw-ansible-deployment
+      ANSIBLE_TAG: aws,widgets_cicd
       AWS_ACCESS_KEY_ID: "${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }}"
       AWS_SECRET_ACCESS_KEY: "${{ secrets.BUILD_NRW_AWS_SECRET_ACCESS_KEY }}"
       AWS_REGION: "eu_west_1"
       HOST_PREFIX: "nrw"
       SSH_KEY: "${{ secrets.NRW_SSH_KEY }}"
+
+    #---- Below this line should not require editing ----
 
     name: "ECR Image Upload and Ansible Deployment"
     runs-on: ubuntu-20.04
@@ -29,16 +32,16 @@ jobs:
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
-        aws-access-key-id: ${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.BUILD_NRW_AWS_SECRET_ACCESS_KEY }}
-        aws-region: eu-west-1
+        aws-access-key-id: "${{ env.AWS_ACCESS_KEY_ID }}"
+        aws-secret-access-key: "${{ env.AWS_SECRET_ACCESS_KEY }}"
+        aws-region: "${{ env.AWS_REGION }}"
 
     - name: "Login to Amazon ECR"
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1   
 
     - name: "Create ECR"
-      uses: epimorphics/github-actions/create-ecr-action@1.11
+      uses: epimorphics/github-actions/create-ecr-action@1.55
       with:
         image: ${{ steps.mapper.outputs.image }}
 
@@ -68,9 +71,9 @@ jobs:
     - name: Install Ansible
       uses: epimorphics/github-actions/ansible@1.55
       with:
-        aws-access-key-id: "${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }}"
-        aws-secret-access-key: "${{ secrets.BUILD_NRW_AWS_SECRET_ACCESS_KEY }}"
-        aws-region: "eu_west_1"
+        aws-access-key-id: "${{ env_AWS_ACCESS_KEY_ID }}"
+        aws-secret-access-key: "${{ env_AWS_SECRET_ACCESS_KEY }}"
+        aws-region: "${{ env.AWS_REGION }}"
         host-prefix: "${{ env.HOST_PREFIX}}"
 
     - name: Ansible Deployment Repository Checkout
@@ -86,6 +89,6 @@ jobs:
       with:
         repo: "${{ env.ANSIBLE_REPO }}"
         secret: "${{ secrets.ANSIBLE_VAULT_PASSWORD }}"
-        stage: "dev"
-        tag: "widgets"
+        stage: "${{ steps.gitinfo.outputs.target }}"
+        tag: "${{ env.ANSIBLE_TAG }}"
 
