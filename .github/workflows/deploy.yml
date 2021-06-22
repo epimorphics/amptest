@@ -9,7 +9,7 @@ jobs:
       ANSIBLE_TAG: aws,widgets_cicd
       AWS_ACCESS_KEY_ID: "${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }}"
       AWS_SECRET_ACCESS_KEY: "${{ secrets.BUILD_NRW_AWS_SECRET_ACCESS_KEY }}"
-      AWS_REGION: "eu_west_1"
+      AWS_REGION: "eu-west-1"
       HOST_PREFIX: "nrw"
       SSH_KEY: "${{ secrets.NRW_SSH_KEY }}"
 
