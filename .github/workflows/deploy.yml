@@ -8,7 +8,6 @@ jobs:
       ANSIBLE_REPO: nrw-ansible-deployment
       AWS_ACCESS_KEY_ID: "${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }}"
       AWS_SECRET_ACCESS_KEY: "${{ secrets.BUILD_NRW_AWS_SECRET_ACCESS_KEY }}"
-      AWS_PROFILE: "nrw"
       AWS_REGION: "eu_west_1"
       HOST_PREFIX: "nrw"
       SSH_KEY: "${{ secrets.NRW_SSH_KEY }}"
@@ -71,7 +70,6 @@ jobs:
       with:
         aws-access-key-id: "${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }}"
         aws-secret-access-key: "${{ secrets.BUILD_NRW_AWS_SECRET_ACCESS_KEY }}"
-        aws-profile: "nrw"
         aws-region: "eu_west_1"
         host-prefix: "${{ env.HOST_PREFIX}}"
 
@@ -86,7 +84,6 @@ jobs:
     - name: Ansible Deploy
       uses: epimorphics/github-actions/ansible-deploy-tag@1.55
       with:
-        aws-profile: "nrw"
         repo: "${{ env.ANSIBLE_REPO }}"
         secret: "${{ secrets.ANSIBLE_VAULT_PASSWORD }}"
         stage: "dev"
