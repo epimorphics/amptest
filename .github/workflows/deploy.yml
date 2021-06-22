@@ -92,6 +92,6 @@ jobs:
     - name: Ansible Deploy
       uses: epimorphics/github-actions/ansible-deploy-tag@1.18
       with:
-        path: "${{ github.runner_temp }}/ansible"
+        path: "ansible"
         stage: "dev"
         tag: "widgets"
