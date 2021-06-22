@@ -11,7 +11,7 @@ jobs:
 
     - name: "Check for mapped deployment"
       id: mapper
-      uses: epimorphics/yml2image@0.01
+      uses: epimorphics/yml2image@0.02
       with:
         ref: "${{github.ref}}"
 
