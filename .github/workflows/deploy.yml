@@ -24,7 +24,7 @@ jobs:
 
     - name: "Check for mapped deployment"
       id: mapper
-      uses: epimorphics/yml2image@0.04
+      uses: epimorphics/yml2image@0.05
       with:
         ref: "${{github.ref}}"
         mapFile: build/map.yml
@@ -89,6 +89,6 @@ jobs:
       with:
         repo: "${{ env.ANSIBLE_REPO }}"
         secret: "${{ secrets.ANSIBLE_VAULT_PASSWORD }}"
-        stage: "${{ steps.gitinfo.outputs.target }}"
+        stage: "${{ steps.mapper.outputs.target }}"
         tag: "${{ env.ANSIBLE_TAG }}"
 
