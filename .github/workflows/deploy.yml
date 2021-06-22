@@ -64,7 +64,9 @@ jobs:
         ssh-key: "${{ secrets.NRW_SSH_KEY }}"
     - name: "SSH test"
       run: |
+        ls -la ~/.ssh
         cat ~/.ssh/config
+        md5sum ~/.ssh/bastion
         ssh nrw_monitor hostname
       shell: bash
 
