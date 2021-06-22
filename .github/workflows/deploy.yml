@@ -93,10 +93,18 @@ jobs:
         name: "${{ env.ANSIBLE_TAG }}"
         version: "${{ steps.gitinfo.outputs.tag }}"
 
+    - name: Git Status
+      shell: bash
+      run: |
+        cd ${{ env.ANSIBLE_REPO }}
+        git status
+
+
     - name: Flux
       uses: EndBug/add-and-commit@v7
       with:
-        message: "GitHub/CICD: ${{ env.ANSIBLE_TAG }}:${{ steps.gitinfo.outputs.tag }}"
-        cwd: "${{ env.ANSIBLE_REPO }}"
+        author_name: "Github CICD"
+        author_email: "noreply@epimorphincs.com"
+        message: "Github/CICD: ${{ env.ANSIBLE_TAG }}:${{ steps.gitinfo.outputs.tag }}"
+        cwd: "./${{ env.ANSIBLE_REPO }}"
         push: true
-        author_email: noreply@epimorphincs.com
