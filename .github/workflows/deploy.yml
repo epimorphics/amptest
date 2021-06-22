@@ -3,10 +3,19 @@ on:
 # workflow_dispatch: {}
   push: {}
 jobs:
-  init:
-    name: Initialise ECR
+  publish:
+    name: ECR Image Upload
     runs-on: ubuntu-20.04
     steps:
+    - uses: actions/checkout@v2
+
+    - name: "Check for mapped deployment"
+      id: mapper
+      uses: epimorphics/deployment-mapper@1.2
+      with:
+        ref: "${{github.ref}}"
+        path: image
+
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
@@ -27,21 +36,6 @@ jobs:
       id: gitinfo
       uses: epimorphics/github-actions/git-info@1.11
 
-
-  publish:
-    needs: init
-    name: ECR Image Upload
-    runs-on: ubuntu-20.04
-    steps:
-    - uses: actions/checkout@v2
-
-    - name: "Check for mapped deployment"
-      id: mapper
-      uses: epimorphics/deployment-mapper@1.2
-      with:
-        ref: "${{github.ref}}"
-        path: image
-
     - name: "Publish image"
       env:
         IMAGE: ${{ steps.mapper.outputs.image }}
@@ -61,7 +55,6 @@ jobs:
       HOST_PREFIX: nrw
 
     steps:
-
     - name: Install Ansible
       uses: epimorphics/github-actions/ansible@1.16
       with:
