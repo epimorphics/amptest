@@ -53,7 +53,7 @@ jobs:
       HOST_PREFIX: nrw
       SSH_KEY_FILE: nrw.pem
 
-#   steps:
+    steps:
 #   - name: SSH Setup
 #     uses: shimataro/ssh-key-action@v2
 #     with:
