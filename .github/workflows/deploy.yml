@@ -62,10 +62,11 @@ jobs:
         known_hosts: unnesessary
 
     - name: Install Ansible
-      uses: epimorphics/github-actions/ansible@1.47
+      uses: epimorphics/github-actions/ansible@1.49
       with:
         aws-access-key-id: "${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }}"
         aws-secret-access-key: "${{ secrets.BUILD_NRW_AWS_SECRET_ACCESS_KEY }}"
+        aws-profile: "nrw"
         aws-region: "eu_west_1"
         host-prefix: "${{ env.HOST_PREFIX}}"
 
@@ -78,8 +79,9 @@ jobs:
         token: "${{ secrets.GIT_REPOSITORY_FULL_ACCESS_PAT }}"
 
     - name: Ansible Deploy
-      uses: epimorphics/github-actions/ansible-deploy-tag@1.47
+      uses: epimorphics/github-actions/ansible-deploy-tag@1.49
       with:
+        aws-profile: "nrw"
         repo: "${{ env.ANSIBLE_REPO }}"
         secret: "${{ secrets.ANSIBLE_VAULT_PASSWORD }}"
         stage: "dev"
