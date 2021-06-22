@@ -8,8 +8,8 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2
-      with:
-        path: image
+#     with:
+#       path: image
 
     - name: "Check for mapped deployment"
       id: mapper
@@ -41,7 +41,8 @@ jobs:
       env:
         IMAGE: ${{ steps.mapper.outputs.image }}
         TAG: ${{ steps.gitinfo.outputs.tag }}
-      run:  cd image && make image publish
+#     run:  cd image && make image publish
+      run:  make image publish
       shell: bash
 
 
