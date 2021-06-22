@@ -75,13 +75,14 @@ jobs:
         token: "${{ secrets.GIT_REPOSITORY_FULL_ACCESS_PAT }}"
 
     - name: Ansible Vault Secret
-      uses: epimorphics/github-actions/ansible-vault-secret@1.12
+      uses: epimorphics/github-actions/ansible-vault-secret@1.14
       with:
         repo: "${{ env.ANSIBLE_REPO }}"
         secret: "${{ secrets.ANSIBLE_VAULT_PASSWORD }}"
 
     - name: Ansible Deploy
-      uses: epimorphics/github-actions/ansible-deploy-tag@1.12
+      uses: epimorphics/github-actions/ansible-deploy-tag@1.14
       with:
+        path: "${{ env.ANSIBLE_REPO }}/ansible"
         stage: "dev"
         tag: "widgets"
