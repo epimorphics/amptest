@@ -8,13 +8,14 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2
+      with:
+        path: image
 
     - name: "Check for mapped deployment"
       id: mapper
       uses: epimorphics/deployment-mapper@1.2
       with:
         ref: "${{github.ref}}"
-        path: image
 
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
