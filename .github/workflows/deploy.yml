@@ -56,19 +56,11 @@ jobs:
 
     env:
       ANSIBLE_REPO: nrw-ansible-deployment
-      AWS_PROFILE: nrw
       HOST_PREFIX: nrw
 
     steps:
     - name: Install Ansible
-      uses: epimorphics/github-actions/ansible@1.19
-      with:
-        aws-profile: "${{ env.AWS_PROFILE}}"
-        aws-access-key-id: "${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }}"
-        aws-secret-access-key: "${{ secrets.BUILD_NRW_AWS_SECRET_ACCESS_KEY }}"
-        aws-region: "eu_west_1"
-        host-prefix: "${{ env.HOST_PROFIX}}"
-        ssh-key: "${{ secrets.NRW_SSH_KEY }}"
+      uses: epimorphics/github-actions/ansible@1.20
 
     - name: Ansible Deployment Checkout
       uses: actions/checkout@v2
@@ -77,23 +69,15 @@ jobs:
         ref: "main"
         token: "${{ secrets.GIT_REPOSITORY_FULL_ACCESS_PAT }}"
 
-    - name: "DEBUG"
-      run: |
-        pwd
-        ls -la
-      shell: bash
-
-#   - name: Ansible Vault Secret
-#     uses: epimorphics/github-actions/ansible-vault-secret@1.19
-#     with:
-#       repo: "${{ env.ANSIBLE_REPO }}"
-#       secret: "${{ secrets.ANSIBLE_VAULT_PASSWORD }}"
-
     - name: Ansible Deploy
-      uses: epimorphics/github-actions/ansible-deploy-tag@1.19
+      uses: epimorphics/github-actions/ansible-deploy-tag@1.20
       with:
-        aws-profile: "${{ env.AWS_PROFILE}}"
+        aws-access-key-id: "${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }}"
+        aws-secret-access-key: "${{ secrets.BUILD_NRW_AWS_SECRET_ACCESS_KEY }}"
+        aws-region: "eu_west_1"
+        host-prefix: "${{ env.HOST_PROFIX}}"
         repo: "${{ env.ANSIBLE_REPO }}"
         secret: "${{ secrets.ANSIBLE_VAULT_PASSWORD }}"
+        ssh-key: "${{ secrets.NRW_SSH_KEY }}"
         stage: "dev"
         tag: "widgets"
