@@ -60,6 +60,15 @@ jobs:
         key: "${{ secrets.NRW_SSH_KEY }}"
         name: "${{ env.SSH_KEY_FILE }}" 
         known_hosts: unnesessary
+        config:
+          IdentityFile ~/.ssh/${{ inputs.key-file }}
+          StrictHostKeyChecking no
+          User ec2-user
+          Host nrw_bastion
+            hostname %h.epimorphics.net
+          Host nrw_* 10.*
+            ProxyJump ${{ inputs.host-prefix }}-bastion
+
 
     - name: "SSH test"
       run: ssh nrw_monitor hostname
