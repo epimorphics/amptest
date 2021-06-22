@@ -108,3 +108,4 @@ jobs:
         author_email: "noreply@epimorphincs.com"
         message: "Github/CICD: ${{ env.ANSIBLE_TAG }}:${{ steps.gitinfo.outputs.tag }}"
         push: true
+        pull_strategy: 'NO-PULL'
