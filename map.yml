@@ -1,0 +1,6 @@
+name:  epimorphics/amptest
+deployments:
+  - production:
+      tag: "{ver}"
+  - dev:
+      branch: dev
