@@ -11,7 +11,7 @@ jobs:
 
     - name: "Check for mapped deployment"
       id: mapper
-      uses: epimorphics/git-actions/mapper@1.53
+      uses: epimorphics/git-actions/mapper@1.54
       with:
         ref: "${{github.ref}}"
 
