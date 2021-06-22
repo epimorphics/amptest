@@ -61,7 +61,7 @@ jobs:
         aws-secret-access-key: "${{ secrets.BUILD_NRW_AWS_SECRET_ACCESS_KEY }}"
         aws-region: "eu_west_1"
         host-prefix: "${{ env.HOST_PREFIX}}"
-        ssh-key: "${{ secret.NRW_SSH_KEY }}"
+        ssh-key: "${{ secrets.NRW_SSH_KEY }}"
     - name: "SSH test"
       run: ssh nrw_monitor hostname
       shell: bash
