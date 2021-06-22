@@ -42,6 +42,13 @@ jobs:
       run:  make image publish
       shell: bash
 
+    - name: "DEBUG"
+      shell: bash
+      run: |
+        echo "  widgets: ${{ steps.gitinfo.outputs.tag }}" > ../tag
+        pwd
+        ls -la
+
 
   deploy:
     needs: publish
@@ -51,7 +58,6 @@ jobs:
     env:
       ANSIBLE_REPO: nrw-ansible-deployment
       HOST_PREFIX: nrw
-      SSH_KEY_FILE: nrw.pem
 
     steps:
     - name: SSH Setup
@@ -61,7 +67,7 @@ jobs:
         known_hosts: unnesessary
 
     - name: Install Ansible
-      uses: epimorphics/github-actions/ansible@1.52
+      uses: epimorphics/github-actions/ansible@1.54
       with:
         aws-access-key-id: "${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }}"
         aws-secret-access-key: "${{ secrets.BUILD_NRW_AWS_SECRET_ACCESS_KEY }}"
@@ -78,7 +84,7 @@ jobs:
         token: "${{ secrets.GIT_REPOSITORY_FULL_ACCESS_PAT }}"
 
     - name: Ansible Deploy
-      uses: epimorphics/github-actions/ansible-deploy-tag@1.52
+      uses: epimorphics/github-actions/ansible-deploy-tag@1.54
       with:
         aws-profile: "nrw"
         repo: "${{ env.ANSIBLE_REPO }}"
