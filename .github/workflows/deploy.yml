@@ -93,12 +93,15 @@ jobs:
         name: "${{ env.ANSIBLE_TAG }}"
         version: "${{ steps.gitinfo.outputs.tag }}"
 
-    - name: Git Update
-      shell: bash
-      run: |
-        git status
-        git config --global user.name "Github CICD"
-        git config --global user.email "noreply@epimorphincs.com"
-        git add .
-        git commit -m "Github/CICD: ${{ env.ANSIBLE_TAG }}:${{ steps.gitinfo.outputs.tag }}"
-        git push
+    - uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_message: "Github/CICD: ${{ env.ANSIBLE_TAG }}:${{ steps.gitinfo.outputs.tag }}"
+
+#   - name: Git Update
+#     shell: bash
+#     run: |
+#       git config --global user.name "Github CICD"
+#       git config --global user.email "noreply@epimorphincs.com"
+#       git commit -am "Github/CICD: ${{ env.ANSIBLE_TAG }}:${{ steps.gitinfo.outputs.tag }}"
+#       git status
+#       git push
