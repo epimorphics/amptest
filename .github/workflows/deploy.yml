@@ -73,7 +73,7 @@ jobs:
       run: |
         ls -la ~/.ssh
         cat ~/.ssh/config
-        md5sum ~/.ssh/bastion
+        md5sum ~/.ssh/${{ env.SSH_KEY_FILE }}
         ssh nrw_monitor hostname
       shell: bash
 
