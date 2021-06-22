@@ -63,6 +63,7 @@ jobs:
       uses: epimorphics/github-actions/ansible@1.26
 
     - name: Ansible Deployment Repository Checkout
+      id: deploy
       uses: actions/checkout@v2
       with:
         repository: "epimorphics/${{ env.ANSIBLE_REPO }}"
@@ -70,7 +71,7 @@ jobs:
         token: "${{ secrets.GIT_REPOSITORY_FULL_ACCESS_PAT }}"
 
     - name: Ansible Deploy
-      uses: epimorphics/github-actions/ansible-deploy-tag@1.31
+      uses: epimorphics/github-actions/ansible-deploy-tag@1.32
       with:
         aws-access-key-id: "${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }}"
         aws-secret-access-key: "${{ secrets.BUILD_NRW_AWS_SECRET_ACCESS_KEY }}"
