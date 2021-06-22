@@ -64,9 +64,9 @@ jobs:
           IdentityFile ~/.ssh/${{ env.SSH_KEY_FILE }}
           User ec2-user
           StrictHostKeyChecking no
-          Host ${{ env.HOST-PREFIX }}-bastion
+          Host ${{ env.HOST_PREFIX }}-bastion
             hostname %h.epimorphics.net
-          Host ${{ env.HOST-PREFIX }}_* 10.*
+          Host ${{ env.HOST_PREFIX }}_* 10.*
             ProxyJump ${{ env.host-prefix }}-bastion
 
     - name: "SSH test"
