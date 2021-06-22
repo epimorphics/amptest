@@ -8,16 +8,18 @@ jobs:
       ANSIBLE_REPO: nrw-ansible-deployment
       HOST_PREFIX: nrw
 
-    name: "ECR Image Upload"
+    name: "ECR Image Upload and Ansible Deployment"
     runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2
+      path: image
 
     - name: "Check for mapped deployment"
       id: mapper
       uses: epimorphics/yml2image@0.03
       with:
         ref: "${{github.ref}}"
+        mapFile: build/map.yml
 
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
@@ -43,7 +45,11 @@ jobs:
       env:
         IMAGE: ${{ steps.mapper.outputs.image }}
         TAG: ${{ steps.gitinfo.outputs.tag }}
-      run:  make image publish
+      run: |
+        cd build
+        make image publish
+        cd ..
+        rm -rf build
       shell: bash
 
     - name: SSH Setup
@@ -68,9 +74,8 @@ jobs:
         repository: "epimorphics/${{ env.ANSIBLE_REPO }}"
         ref: "main"
         token: "${{ secrets.GIT_REPOSITORY_FULL_ACCESS_PAT }}"
-        path: "../${{ env.ANSIBLE_REPO }}"
 
-    - name: debug
+    - name: DEBUG
       shell: bash
       run: |
         pwd
