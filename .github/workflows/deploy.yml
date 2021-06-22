@@ -93,19 +93,12 @@ jobs:
         name: "${{ env.ANSIBLE_TAG }}"
         version: "${{ steps.gitinfo.outputs.tag }}"
 
-    - name: Git Status
+    - name: Git Update
       shell: bash
       run: |
-        pwd
-        ls -la
         git status
-
-
-    - name: Flux
-      uses: EndBug/add-and-commit@v7
-      with:
-        author_name: "Github CICD"
-        author_email: "noreply@epimorphincs.com"
-        message: "Github/CICD: ${{ env.ANSIBLE_TAG }}:${{ steps.gitinfo.outputs.tag }}"
-        push: true
-        pull_strategy: 'NO-PULL'
+        git config --global user.name "Github CICD"
+        git config --global user.email "noreply@epimorphincs.com"
+        git add .
+        git commit -m "Github/CICD: ${{ env.ANSIBLE_TAG }}:${{ steps.gitinfo.outputs.tag }}"
+        git push
