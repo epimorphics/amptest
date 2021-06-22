@@ -96,6 +96,8 @@ jobs:
     - name: Git Status
       shell: bash
       run: |
+        pwd
+        ls -la
         cd ${{ env.ANSIBLE_REPO }}
         git status
 
