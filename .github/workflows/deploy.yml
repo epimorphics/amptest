@@ -28,13 +28,13 @@ jobs:
       uses: aws-actions/amazon-ecr-login@v1   
 
     - name: "Create ECR"
-      uses: epimorphics/github-actions/create-ecr-action@1.07
+      uses: epimorphics/github-actions/create-ecr-action@1.11
       with:
         image: ${{ steps.mapper.outputs.image }}
 
     - name: "Get Git Tag"
       id: gitinfo
-      uses: epimorphics/github-actions/git-info@1.07
+      uses: epimorphics/github-actions/git-info@1.11
 
     - name: "Publish image"
       env:
@@ -48,35 +48,40 @@ jobs:
     needs: publish
     name: Ansible Deployment
     runs-on: ubuntu-20.04
+
+    env:
+      ANSIBLE_REPO: nrw-ansible-deployment
+      AWS_PROFILE: nrw
+      HOST_PREFIX: nrw
+
     steps:
 
     - name: Install Ansible
-      uses: epimorphics/github-actions/ansible@1.10
+      uses: epimorphics/github-actions/ansible@1.12
       with:
-        aws-profile: nrw
-        aws-access-key-id: ${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.BUILD_NRW_AWS_SECRET_ACCESS_KEY }}
-        aws-region: eu_west_1
-        host-prefix: nrw
-        ssh-key: ${{ secrets.NRW_SSH_KEY }}
+        aws-profile: "${{ env.AWS_PROFILE}}"
+        aws-access-key-id: "${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }}"
+        aws-secret-access-key: "${{ secrets.BUILD_NRW_AWS_SECRET_ACCESS_KEY }}"
+        aws-region: "eu_west_1"
+        host-prefix: "${{ env.HOST_PROFIX}}"
+        ssh-key: "${{ secrets.NRW_SSH_KEY }}"
 
     - name: Ansible deployment checkout
       uses: actions/checkout@v2
       with:
-        repository: epimorphics/nrw-ansible-deployment
-        ref: main
-        path: nrw-ansible-deployment
+        repository: "epimorphics/${{ env.ANSIBLE_REPO }}"
+        ref: "main"
+        path: "${{ env.ANSIBLE_REPO }}"
         token: "${{ secrets.GIT_REPOSITORY_FULL_ACCESS_PAT }}"
 
     - name: Ansible Vault Secret
-      shell: bash
-      run: | 
-        mkdir nrw-ansible-deployment/ansible/.secret && echo ${{ secrets.ANSIBLE_VAULT_PASSWORD }} > nrw-ansible-deployment/ansible/.secret/default
+      uses: epimorphics/github-actions/ansible-vault-secret@1.12
+      with:
+        repo: "${{ env.ANSIBLE_REPO }}"
+        secret: "${{ secrets.ANSIBLE_VAULT_PASSWORD }}"
 
-    - name: Deploy via Ansible
-      shell: bash
-      run: | 
-        cd nrw-ansible-deployment/ansible && AWS_PROFILE=nrw ./eu-west-1/ec2.py --list
-#       cd nrw-ansible-deployment/ansible && ansible -m setup monitor
-
-
+    - name: Ansible Deploy
+      uses: epimorphics/github-actions/ansible-deploy-tag@1.12
+      with:
+        stage: "dev"
+        tag: "widgets"
