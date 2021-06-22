@@ -107,5 +107,4 @@ jobs:
         author_name: "Github CICD"
         author_email: "noreply@epimorphincs.com"
         message: "Github/CICD: ${{ env.ANSIBLE_TAG }}:${{ steps.gitinfo.outputs.tag }}"
-        cwd: "./${{ env.ANSIBLE_REPO }}"
         push: true
