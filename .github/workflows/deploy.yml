@@ -60,17 +60,17 @@ jobs:
         key: "${{ secrets.NRW_SSH_KEY }}"
         name: "${{ env.SSH_KEY_FILE }}" 
         known_hosts: unnesessary
-        config: |
-          IdentityFile ~/.ssh/${{ env.SSH_KEY_FILE }}
-          User ec2-user
-          StrictHostKeyChecking no
-          Host ${{ env.HOST_PREFIX }}-bastion
-            hostname %h.epimorphics.net
-          Host ${{ env.HOST_PREFIX }}_* 10.*
-            ProxyJump ${{ env.HOST_PREFIX }}-bastion
+#       config: |
+#         IdentityFile ~/.ssh/${{ env.SSH_KEY_FILE }}
+#         User ec2-user
+#         StrictHostKeyChecking no
+#         Host ${{ env.HOST_PREFIX }}-bastion
+#           hostname %h.epimorphics.net
+#         Host ${{ env.HOST_PREFIX }}_* 10.*
+#           ProxyJump ${{ env.HOST_PREFIX }}-bastion
 
     - name: Install Ansible
-      uses: epimorphics/github-actions/ansible@1.38
+      uses: epimorphics/github-actions/ansible@1.40
 
     - name: Ansible Deployment Repository Checkout
       id: deploy
@@ -80,12 +80,8 @@ jobs:
         ref: "main"
         token: "${{ secrets.GIT_REPOSITORY_FULL_ACCESS_PAT }}"
 
-    - name: "SSH test"
-      run: ssh nrw_monitor hostname
-      shell: bash
-
     - name: Ansible Deploy
-      uses: epimorphics/github-actions/ansible-deploy-tag@1.38
+      uses: epimorphics/github-actions/ansible-deploy-tag@1.40
       with:
         aws-access-key-id: "${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }}"
         aws-secret-access-key: "${{ secrets.BUILD_NRW_AWS_SECRET_ACCESS_KEY }}"
