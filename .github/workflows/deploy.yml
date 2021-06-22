@@ -15,7 +15,7 @@ jobs:
 
     #---- Below this line should not require editing ----
 
-    name: "ECR Image Upload and Ansible Deployment"
+    name: "Ansible Deployment"
     runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2
@@ -98,7 +98,6 @@ jobs:
       run: |
         pwd
         ls -la
-        cd ${{ env.ANSIBLE_REPO }}
         git status
 
 
