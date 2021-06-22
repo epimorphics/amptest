@@ -67,7 +67,7 @@ jobs:
           Host ${{ env.host-prefix }}-bastion
             hostname %h.epimorphics.net
           Host ${{ env.host-prefix }}_* 10.*
-            ProxyJump ${{ inputs.host-prefix }}-bastion
+            ProxyJump ${{ env.host-prefix }}-bastion
 
     - name: "SSH test"
       run: |
