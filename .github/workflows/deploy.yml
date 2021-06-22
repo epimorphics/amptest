@@ -54,17 +54,20 @@ jobs:
       SSH_KEY_FILE: nrw.pem
 
     steps:
-    - name: Ansible Deploy
-      uses: epimorphics/github-actions/ansible-deploy-tag@1.34
+    - name: Ansible SSH Setup
+      uses: shimataro/ssh-key-action@v2
       with:
-        aws-access-key-id: "${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }}"
-        aws-secret-access-key: "${{ secrets.BUILD_NRW_AWS_SECRET_ACCESS_KEY }}"
-        aws-region: "eu_west_1"
-        host-prefix: "${{ env.HOST_PREFIX}}"
-        key-file: "${{ env.SSH_KEY_FILE }}" 
-        repo: "${{ env.ANSIBLE_REPO }}"
-        secret: "${{ secrets.ANSIBLE_VAULT_PASSWORD }}"
-        stage: "dev"
+        key: "${{ secrets.NRW_SSH_KEY }}"
+        name: "${{ env.SSH_KEY_FILE }}" 
+        known_hosts: unnesessary
+        config: |
+          IdentityFile ~/.ssh/${{ env.SSH_KEY_FILE }}
+          User ec2-user
+          StrictHostKeyChecking no
+          Host ${{ env.host-prefix }}-bastion
+            hostname %h.epimorphics.net
+          Host ${{ env.host-prefix }}_* 10.*
+            ProxyJump ${{ inputs.host-prefix }}-bastion
 
     - name: "SSH test"
       run: |
