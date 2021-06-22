@@ -54,15 +54,14 @@ jobs:
       SSH_KEY_FILE: nrw.pem
 
     steps:
-    - name: SSH Setup
-      uses: shimataro/ssh-key-action@v2
-      with:
-        key: "${{ secrets.NRW_SSH_KEY }}"
-#       name: "${{ env.SSH_KEY_FILE }}" 
-        known_hosts: unnesessary
+#   - name: SSH Setup
+#     uses: shimataro/ssh-key-action@v2
+#     with:
+#       key: "${{ secrets.NRW_SSH_KEY }}"
+#       known_hosts: unnesessary
 
     - name: Install Ansible
-      uses: epimorphics/github-actions/ansible@1.49
+      uses: epimorphics/github-actions/ansible@1.51
       with:
         aws-access-key-id: "${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }}"
         aws-secret-access-key: "${{ secrets.BUILD_NRW_AWS_SECRET_ACCESS_KEY }}"
@@ -79,7 +78,7 @@ jobs:
         token: "${{ secrets.GIT_REPOSITORY_FULL_ACCESS_PAT }}"
 
     - name: Ansible Deploy
-      uses: epimorphics/github-actions/ansible-deploy-tag@1.49
+      uses: epimorphics/github-actions/ansible-deploy-tag@1.51
       with:
         aws-profile: "nrw"
         repo: "${{ env.ANSIBLE_REPO }}"
