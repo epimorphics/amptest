@@ -6,7 +6,12 @@ jobs:
   Deploy:
     env:
       ANSIBLE_REPO: nrw-ansible-deployment
-      HOST_PREFIX: nrw
+      AWS_ACCESS_KEY_ID: "${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }}"
+      AWS_SECRET_ACCESS_KEY: "${{ secrets.BUILD_NRW_AWS_SECRET_ACCESS_KEY }}"
+      AWS_PROFILE: "nrw"
+      AWS_REGION: "eu_west_1"
+      HOST_PREFIX: "nrw"
+      SSH_KEY: "${{ secrets.NRW_SSH_KEY }}"
 
     name: "ECR Image Upload and Ansible Deployment"
     runs-on: ubuntu-20.04
@@ -17,7 +22,7 @@ jobs:
 
     - name: "Check for mapped deployment"
       id: mapper
-      uses: epimorphics/yml2image@0.03
+      uses: epimorphics/yml2image@0.04
       with:
         ref: "${{github.ref}}"
         mapFile: build/map.yml
@@ -58,7 +63,7 @@ jobs:
     - name: SSH Setup
       uses: shimataro/ssh-key-action@v2
       with:
-        key: "${{ secrets.NRW_SSH_KEY }}"
+        key: "${{ env.SSH_KEY }}"
         known_hosts: unnesessary
 
     - name: Install Ansible
@@ -77,15 +82,6 @@ jobs:
         repository: "epimorphics/${{ env.ANSIBLE_REPO }}"
         ref: "main"
         token: "${{ secrets.GIT_REPOSITORY_FULL_ACCESS_PAT }}"
-
-    - name: DEBUG
-      shell: bash
-      run: |
-        pwd
-        ls -la
-        cd ..
-        pwd
-        ls -la
 
     - name: Ansible Deploy
       uses: epimorphics/github-actions/ansible-deploy-tag@1.55
