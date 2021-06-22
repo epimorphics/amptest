@@ -61,13 +61,13 @@ jobs:
         name: "${{ env.SSH_KEY_FILE }}" 
         known_hosts: unnesessary
         config:
-          IdentityFile ~/.ssh/${{ inputs.key-file }}
+          IdentityFile ~/.ssh/${{ env.SSH_KEY_FILE }}
           StrictHostKeyChecking no
           User ec2-user
           Host nrw_bastion
             hostname %h.epimorphics.net
           Host nrw_* 10.*
-            ProxyJump ${{ inputs.host-prefix }}-bastion
+            ProxyJump nrw-bastion
 
 
     - name: "SSH test"
