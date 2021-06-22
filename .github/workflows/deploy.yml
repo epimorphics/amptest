@@ -54,7 +54,7 @@ jobs:
       SSH_KEY_FILE: nrw.pem
 
     steps:
-    - name: Ansible SSH Setup
+    - name: SSH Setup
       uses: shimataro/ssh-key-action@v2
       with:
         key: "${{ secrets.NRW_SSH_KEY }}"
@@ -69,12 +69,31 @@ jobs:
           Host ${{ env.HOST_PREFIX }}_* 10.*
             ProxyJump ${{ env.HOST_PREFIX }}-bastion
 
+    - name: Install Ansible
+      uses: epimorphics/github-actions/ansible@1.36
+
+    - name: Ansible Deployment Repository Checkout
+      id: deploy
+      uses: actions/checkout@v2
+      with:
+        repository: "epimorphics/${{ env.ANSIBLE_REPO }}"
+        ref: "main"
+        token: "${{ secrets.GIT_REPOSITORY_FULL_ACCESS_PAT }}"
+
     - name: "SSH test"
-      run: |
-        ls -la ~/.ssh
-        cat ~/.ssh/config
-        md5sum ~/.ssh/${{ env.SSH_KEY_FILE }}
-        cat ~/.ssh/${{ env.SSH_KEY_FILE }}
-        ssh nrw_monitor hostname
+      run: ssh nrw_monitor hostname
       shell: bash
+
+    - name: Ansible Deploy
+      uses: epimorphics/github-actions/ansible-deploy-tag@1.36
+      with:
+        aws-access-key-id: "${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }}"
+        aws-secret-access-key: "${{ secrets.BUILD_NRW_AWS_SECRET_ACCESS_KEY }}"
+        aws-region: "eu_west_1"
+        host-prefix: "${{ env.HOST_PREFIX}}"
+        key-file: "${{ env.SSH_KEY_FILE }}" 
+        repo: "${{ env.ANSIBLE_REPO }}"
+        secret: "${{ secrets.ANSIBLE_VAULT_PASSWORD }}"
+        stage: "dev"
+        tag: "widgets"
 
