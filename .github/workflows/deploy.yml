@@ -3,7 +3,11 @@ on:
 # workflow_dispatch: {}
   push: {}
 jobs:
-  publish:
+  Deploy:
+    env:
+      ANSIBLE_REPO: nrw-ansible-deployment
+      HOST_PREFIX: nrw
+
     name: "ECR Image Upload"
     runs-on: ubuntu-20.04
     steps:
@@ -42,23 +46,6 @@ jobs:
       run:  make image publish
       shell: bash
 
-    - name: "DEBUG"
-      shell: bash
-      run: |
-        echo "  widgets: ${{ steps.gitinfo.outputs.tag }}" > ../tag
-        pwd
-        ls -la
-
-
-  deploy:
-    needs: publish
-    name: Ansible Deployment
-    runs-on: ubuntu-20.04
-
-    env:
-      ANSIBLE_REPO: nrw-ansible-deployment
-      HOST_PREFIX: nrw
-
     steps:
     - name: SSH Setup
       uses: shimataro/ssh-key-action@v2
@@ -82,6 +69,16 @@ jobs:
         repository: "epimorphics/${{ env.ANSIBLE_REPO }}"
         ref: "main"
         token: "${{ secrets.GIT_REPOSITORY_FULL_ACCESS_PAT }}"
+        path: "../${{ env.ANSIBLE_REPO }}"
+
+    - name: debug
+      shell: bash
+      run: |
+        pwd
+        ls -la
+        cd ..
+        pwd
+        ls -la
 
     - name: Ansible Deploy
       uses: epimorphics/github-actions/ansible-deploy-tag@1.54
