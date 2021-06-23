@@ -24,7 +24,7 @@ jobs:
 
     - name: "Check for mapped deployment"
       id: mapper
-      uses: epimorphics/yml2image@0.06
+      uses: epimorphics/github-actions/mapper@1.65
       with:
         ref: "${{github.ref}}"
         mapFile: build/map.yml
@@ -51,7 +51,7 @@ jobs:
       with:
         path: build
 
-    - name: "Publish image ${{ steps.mapper.outputs.image }}:${{ steps.gitinfo.outputs.tag }}"
+    - name: "Publish image"
       env:
         IMAGE: ${{ steps.mapper.outputs.image }}
         TAG: ${{ steps.gitinfo.outputs.tag }}
@@ -84,7 +84,7 @@ jobs:
         ref: "main"
         token: "${{ secrets.GIT_REPOSITORY_FULL_ACCESS_PAT }}"
 
-    - name: "Ansible Deploy: ${{ env.ANSIBLE_TAG }}:${{ steps.gitinfo.outputs.tag }} -> ${{ steps.mapper.outputs.target }}"
+    - name: "Ansible Deploy"
       uses: epimorphics/github-actions/ansible-deploy-tag@1.64
       with:
         secret: "${{ secrets.ANSIBLE_VAULT_PASSWORD }}"
@@ -92,7 +92,7 @@ jobs:
         name: "${{ env.ANSIBLE_TAG }}"
         version: "${{ steps.gitinfo.outputs.tag }}"
 
-    - name: "Git Commit: Github/CICD: ${{ env.ANSIBLE_TAG }}:${{ steps.gitinfo.outputs.tag }}"
+    - name: "Git Commit"
       shell: bash
       run: |
         git config --global user.name "Github CICD"
