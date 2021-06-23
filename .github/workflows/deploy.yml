@@ -5,7 +5,7 @@ on:
 jobs:
   Deploy:
     env:
-      ANSIBLE_REPO: nrw-ansible-deployment
+      ANSIBLE_REPO: epimorphics/nrw-ansible-deployment
       ANSIBLE_TAG: amptest
       AWS_ACCESS_KEY_ID: "${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }}"
       AWS_SECRET_ACCESS_KEY: "${{ secrets.BUILD_NRW_AWS_SECRET_ACCESS_KEY }}"
@@ -80,7 +80,7 @@ jobs:
       id: deploy
       uses: actions/checkout@v2
       with:
-        repository: "epimorphics/${{ env.ANSIBLE_REPO }}"
+        repository: "${{ env.ANSIBLE_REPO }}"
         ref: "main"
         token: "${{ secrets.GIT_REPOSITORY_FULL_ACCESS_PAT }}"
 
