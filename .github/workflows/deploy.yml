@@ -29,9 +29,13 @@ jobs:
         ref: "${{github.ref}}"
         mapFile: build/map.yml
 
-    - name: Terminiate Run
+    - name: "Terminiate Run"
       if: steps.mapper.outputs.image == ''
       uses: andymckay/cancel-action@0.2
+
+    - name: "Waiting for cancellation"
+      run: sleep 60
+      if: steps.mapper.outputs.image == ''
 
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
