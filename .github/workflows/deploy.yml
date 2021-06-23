@@ -1,4 +1,4 @@
-name: Mapped deployment
+name: Ansible Deployment
 on:
   workflow_dispatch: {}
   push: {}
@@ -24,10 +24,14 @@ jobs:
 
     - name: "Check for mapped deployment"
       id: mapper
-      uses: epimorphics/github-actions/mapper@1.65
+      uses: epimorphics/github-actions/mapper@v2
       with:
         ref: "${{github.ref}}"
         mapFile: build/map.yml
+
+    - name: Terminiate Run
+      if: steps.mapper.outputs.image == ''
+      uses: andymckay/cancel-action@0.2
 
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
@@ -41,13 +45,13 @@ jobs:
       uses: aws-actions/amazon-ecr-login@v1   
 
     - name: "Create ECR"
-      uses: epimorphics/github-actions/create-ecr-action@1.64
+      uses: epimorphics/github-actions/create-ecr-action@v2
       with:
         image: ${{ steps.mapper.outputs.image }}
 
     - name: "Get git tag"
       id: gitinfo
-      uses: epimorphics/github-actions/git-info@1.64
+      uses: epimorphics/github-actions/git-info@v2
       with:
         path: build
 
@@ -69,7 +73,7 @@ jobs:
         known_hosts: unnesessary
 
     - name: "Install Ansible"
-      uses: epimorphics/github-actions/ansible@1.64
+      uses: epimorphics/github-actions/ansible@v2
       with:
         aws-access-key-id: "${{ env.AWS_ACCESS_KEY_ID }}"
         aws-secret-access-key: "${{ env.AWS_SECRET_ACCESS_KEY }}"
@@ -85,7 +89,7 @@ jobs:
         token: "${{ secrets.GIT_REPOSITORY_FULL_ACCESS_PAT }}"
 
     - name: "Ansible Deploy"
-      uses: epimorphics/github-actions/ansible-deploy-tag@1.64
+      uses: epimorphics/github-actions/ansible-deploy-tag@v2
       with:
         secret: "${{ secrets.ANSIBLE_VAULT_PASSWORD }}"
         stage: "${{ steps.mapper.outputs.target }}"
