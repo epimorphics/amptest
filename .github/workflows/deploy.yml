@@ -41,13 +41,13 @@ jobs:
       uses: aws-actions/amazon-ecr-login@v1   
 
     - name: "Create ECR"
-      uses: epimorphics/github-actions/create-ecr-action@1.63
+      uses: epimorphics/github-actions/create-ecr-action@1.64
       with:
         image: ${{ steps.mapper.outputs.image }}
 
     - name: "Get git tag"
       id: gitinfo
-      uses: epimorphics/github-actions/git-info@1.63
+      uses: epimorphics/github-actions/git-info@1.64
       with:
         path: build
 
@@ -69,7 +69,7 @@ jobs:
         known_hosts: unnesessary
 
     - name: Install Ansible
-      uses: epimorphics/github-actions/ansible@1.63
+      uses: epimorphics/github-actions/ansible@1.64
       with:
         aws-access-key-id: "${{ env.AWS_ACCESS_KEY_ID }}"
         aws-secret-access-key: "${{ env.AWS_SECRET_ACCESS_KEY }}"
@@ -85,9 +85,8 @@ jobs:
         token: "${{ secrets.GIT_REPOSITORY_FULL_ACCESS_PAT }}"
 
     - name: Ansible Deploy
-      uses: epimorphics/github-actions/ansible-deploy-tag@1.63
+      uses: epimorphics/github-actions/ansible-deploy-tag@1.64
       with:
-        repo: "${{ env.ANSIBLE_REPO }}"
         secret: "${{ secrets.ANSIBLE_VAULT_PASSWORD }}"
         stage: "${{ steps.mapper.outputs.target }}"
         name: "${{ env.ANSIBLE_TAG }}"
@@ -104,5 +103,6 @@ jobs:
     - name: Git Push
       uses: ad-m/github-push-action@master
       with:
-        github_token: "${{ secrets.GIT_REPOSITORY_FULL_ACCESS_PAT }}"
+        repository: "${{ env.ANSIBLE_REPO }}"
         branch: main
+        github_token: "${{ secrets.GIT_REPOSITORY_FULL_ACCESS_PAT }}"
