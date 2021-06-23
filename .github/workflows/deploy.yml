@@ -98,11 +98,11 @@ jobs:
         git config --global user.name "Github CICD"
         git config --global user.email "noreply@epimorphincs.com"
         git commit -am "Github/CICD: ${{ env.ANSIBLE_TAG }}:${{ steps.gitinfo.outputs.tag }}"
-        git status
+        git push
  
-    - name: Git Push
-      uses: ad-m/github-push-action@master
-      with:
-        repository: "${{ env.ANSIBLE_REPO }}"
-        branch: main
-        github_token: "${{ secrets.GIT_REPOSITORY_FULL_ACCESS_PAT }}"
+#   - name: Git Push
+#     uses: ad-m/github-push-action@master
+#     with:
+#       repository: "${{ env.ANSIBLE_REPO }}"
+#       branch: main
+#       github_token: "${{ secrets.GIT_REPOSITORY_FULL_ACCESS_PAT }}"
