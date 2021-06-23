@@ -1,6 +1,6 @@
 name: Mapped deployment
 on:
-# workflow_dispatch: {}
+  workflow_dispatch: {}
   push: {}
 jobs:
   Deploy:
@@ -51,7 +51,7 @@ jobs:
       with:
         path: build
 
-    - name: "Publish image"
+    - name: "Publish image ${{ steps.mapper.outputs.image }}:${{ steps.gitinfo.outputs.tag }}"
       env:
         IMAGE: ${{ steps.mapper.outputs.image }}
         TAG: ${{ steps.gitinfo.outputs.tag }}
@@ -62,13 +62,13 @@ jobs:
         rm -rf build
       shell: bash
 
-    - name: SSH Setup
+    - name: "SSH Setup: github -> aws"
       uses: shimataro/ssh-key-action@v2
       with:
         key: "${{ env.SSH_KEY }}"
         known_hosts: unnesessary
 
-    - name: Install Ansible
+    - name: "Install Ansible"
       uses: epimorphics/github-actions/ansible@1.64
       with:
         aws-access-key-id: "${{ env.AWS_ACCESS_KEY_ID }}"
@@ -76,7 +76,7 @@ jobs:
         aws-region: "${{ env.AWS_REGION }}"
         host-prefix: "${{ env.HOST_PREFIX}}"
 
-    - name: Ansible Deployment Repository Checkout
+    - name: "Ansible Deployment Repository Checkout"
       id: deploy
       uses: actions/checkout@v2
       with:
@@ -84,7 +84,7 @@ jobs:
         ref: "main"
         token: "${{ secrets.GIT_REPOSITORY_FULL_ACCESS_PAT }}"
 
-    - name: Ansible Deploy
+    - name: "Ansible Deploy: ${{ env.ANSIBLE_TAG }}:${{ steps.gitinfo.outputs.tag }} -> ${{ steps.mapper.outputs.target }}"
       uses: epimorphics/github-actions/ansible-deploy-tag@1.64
       with:
         secret: "${{ secrets.ANSIBLE_VAULT_PASSWORD }}"
@@ -92,17 +92,10 @@ jobs:
         name: "${{ env.ANSIBLE_TAG }}"
         version: "${{ steps.gitinfo.outputs.tag }}"
 
-    - name: Git Commit
+    - name: "Git Commit: Github/CICD: ${{ env.ANSIBLE_TAG }}:${{ steps.gitinfo.outputs.tag }}"
       shell: bash
       run: |
         git config --global user.name "Github CICD"
         git config --global user.email "noreply@epimorphincs.com"
         git commit -am "Github/CICD: ${{ env.ANSIBLE_TAG }}:${{ steps.gitinfo.outputs.tag }}"
         git push
- 
-#   - name: Git Push
-#     uses: ad-m/github-push-action@master
-#     with:
-#       repository: "${{ env.ANSIBLE_REPO }}"
-#       branch: main
-#       github_token: "${{ secrets.GIT_REPOSITORY_FULL_ACCESS_PAT }}"
