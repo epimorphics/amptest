@@ -2,22 +2,44 @@ name: Ansible Deployment
 on:
   workflow_dispatch: {}
   push: {}
+env:
+  ANSIBLE_REPO: epimorphics/nrw-ansible-deployment
+  ANSIBLE_TAG: amptest
+  AWS_ACCESS_KEY_ID: "${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }}"
+  AWS_SECRET_ACCESS_KEY: "${{ secrets.BUILD_NRW_AWS_SECRET_ACCESS_KEY }}"
+  AWS_REGION: "eu-west-1"
+  HOST_PREFIX: "nrw"
+  SSH_KEY: "${{ secrets.NRW_SSH_KEY }}"
+
+#---- Below this line should not require editing ----
 jobs:
-  Deploy:
-    env:
-      ANSIBLE_REPO: epimorphics/nrw-ansible-deployment
-      ANSIBLE_TAG: amptest
-      AWS_ACCESS_KEY_ID: "${{ secrets.BUILD_NRW_AWS_ACCESS_KEY_ID }}"
-      AWS_SECRET_ACCESS_KEY: "${{ secrets.BUILD_NRW_AWS_SECRET_ACCESS_KEY }}"
-      AWS_REGION: "eu-west-1"
-      HOST_PREFIX: "nrw"
-      SSH_KEY: "${{ secrets.NRW_SSH_KEY }}"
-
-    #---- Below this line should not require editing ----
-
-    name: "Ansible Deployment"
+  setup:
+    name: "Environment Setup"
     runs-on: ubuntu-20.04
+    outputs:
+      image: ${{ steps.mapper.outputs.image }}
     steps:
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: "${{ env.AWS_ACCESS_KEY_ID }}"
+        aws-secret-access-key: "${{ env.AWS_SECRET_ACCESS_KEY }}"
+        aws-region: "${{ env.AWS_REGION }}"
+
+    - name: "SSH Setup: github -> aws"
+      uses: shimataro/ssh-key-action@v2
+      with:
+        key: "${{ env.SSH_KEY }}"
+        known_hosts: unnesessary
+
+    - name: "Install Ansible"
+      uses: epimorphics/github-actions/ansible@v2
+      with:
+        aws-access-key-id: "${{ env.AWS_ACCESS_KEY_ID }}"
+        aws-secret-access-key: "${{ env.AWS_SECRET_ACCESS_KEY }}"
+        aws-region: "${{ env.AWS_REGION }}"
+        host-prefix: "${{ env.HOST_PREFIX}}"
+
     - uses: actions/checkout@v2
       with:
         path: build
@@ -29,21 +51,15 @@ jobs:
         ref: "${{github.ref}}"
         mapFile: build/map.yml
 
-    - name: "Terminiate Run"
-      if: steps.mapper.outputs.image == ''
-      uses: andymckay/cancel-action@0.2
 
-    - name: "Waiting for cancellation"
-      run: sleep 60
-      if: steps.mapper.outputs.image == ''
-
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: "${{ env.AWS_ACCESS_KEY_ID }}"
-        aws-secret-access-key: "${{ env.AWS_SECRET_ACCESS_KEY }}"
-        aws-region: "${{ env.AWS_REGION }}"
-
+  publish:
+    needs: setup
+    name: "ECR Image Upload"
+    runs-on: ubuntu-20.04
+    if: needs.setup.outputs.image != ''
+    outputs:
+      tag: ${{ steps.gitinfo.outputs.tag }}
+    steps:
     - name: "Login to Amazon ECR"
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1   
@@ -70,20 +86,13 @@ jobs:
         rm -rf build
       shell: bash
 
-    - name: "SSH Setup: github -> aws"
-      uses: shimataro/ssh-key-action@v2
-      with:
-        key: "${{ env.SSH_KEY }}"
-        known_hosts: unnesessary
 
-    - name: "Install Ansible"
-      uses: epimorphics/github-actions/ansible@v2
-      with:
-        aws-access-key-id: "${{ env.AWS_ACCESS_KEY_ID }}"
-        aws-secret-access-key: "${{ env.AWS_SECRET_ACCESS_KEY }}"
-        aws-region: "${{ env.AWS_REGION }}"
-        host-prefix: "${{ env.HOST_PREFIX}}"
-
+  deploy:
+    needs: publish
+    name: "Ansible Deploy"
+    runs-on: ubuntu-20.04
+    if: needs.publish.outputs.tag != ''
+    steps:
     - name: "Ansible Deployment Repository Checkout"
       id: deploy
       uses: actions/checkout@v2
@@ -104,6 +113,6 @@ jobs:
       shell: bash
       run: |
         git config --global user.name "Github CICD"
-        git config --global user.email "noreply@epimorphincs.com"
-        git commit -am "Github/CICD: ${{ env.ANSIBLE_TAG }}:${{ steps.gitinfo.outputs.tag }}"
+        git config --global user.email "noreply@epimorphics.com"
+        git commit -am "Github/CICD: ${{ env.ANSIBLE_TAG }}:${{ needs.publish.outputs.tag }}"
         git push
