@@ -24,8 +24,6 @@ jobs:
     steps:
     - name: "Checkout"
       uses: actions/checkout@v2
-#     with:
-#       path: build
 
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
@@ -43,7 +41,6 @@ jobs:
       uses: epimorphics/github-actions/mapper@v2
       with:
         ref: "${{github.ref}}"
-#       mapFile: build/map.yml
 
     - name: "Create ECR"
       if: steps.mapper.outputs.image != ''
@@ -55,20 +52,15 @@ jobs:
       if: steps.mapper.outputs.image != ''
       id: gitinfo
       uses: epimorphics/github-actions/git-info@v2
-#     with:
-#       path: build
 
     - name: "Publish image"
-      if: steps.gitinfo.outputs.image != ''
+      if: steps.mapper.outputs.image != ''
       env:
         IMAGE: ${{ steps.mapper.outputs.image }}
         TAG: ${{ steps.gitinfo.outputs.tag }}
       shell: bash
       run: |
         make image publish
-#       cd build
-#       cd ..
-#       rm -rf build
 
 
   deploy:
