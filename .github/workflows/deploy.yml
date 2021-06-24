@@ -13,12 +13,27 @@ env:
 
 #---- Below this line should not require editing ----
 jobs:
-  setup:
-    name: "Environment Setup"
+  publish:
+    name: "Publish: ECR Image Upload"
     runs-on: ubuntu-20.04
     outputs:
       image: ${{ steps.mapper.outputs.image }}
+      tag: ${{ steps.gitinfo.outputs.tag }}
+      target: ${{ steps.mapper.outputs.target }}
+
     steps:
+    - name: "Checkout"
+      uses: actions/checkout@v2
+#     with:
+#       path: build
+
+    - name: "Check for mapped deployment"
+      id: mapper
+      uses: epimorphics/yml2image@0.06
+      with:
+        ref: "${{github.ref}}"
+#       mapFile: build/map.yml
+
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
@@ -26,6 +41,39 @@ jobs:
         aws-secret-access-key: "${{ env.AWS_SECRET_ACCESS_KEY }}"
         aws-region: "${{ env.AWS_REGION }}"
 
+    - name: "Login to Amazon ECR"
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1   
+
+    - name: "Create ECR"
+      uses: epimorphics/github-actions/create-ecr-action@1.63
+      with:
+        image: ${{ steps.mapper.outputs.image }}
+
+    - name: "Get git tag"
+      id: gitinfo
+      uses: epimorphics/github-actions/git-info@1.63
+#     with:
+#       path: build
+
+    - name: "Publish image"
+      env:
+        IMAGE: ${{ steps.mapper.outputs.image }}
+        TAG: ${{ steps.gitinfo.outputs.tag }}
+      shell: bash
+      run: |
+        cd build
+        make image publish
+#       cd ..
+#       rm -rf build
+
+
+  deploy:
+    needs: publish
+    name: "Deploy: Ansible"
+    runs-on: ubuntu-20.04
+    if: needs.publish.outputs.tag != ''
+    steps:
     - name: "SSH Setup: github -> aws"
       uses: shimataro/ssh-key-action@v2
       with:
@@ -40,64 +88,6 @@ jobs:
         aws-region: "${{ env.AWS_REGION }}"
         host-prefix: "${{ env.HOST_PREFIX}}"
 
-    - uses: actions/checkout@v2
-      with:
-        path: build
-
-    - name: "Check for mapped deployment"
-      id: mapper
-      uses: epimorphics/github-actions/mapper@v2
-      with:
-        ref: "${{github.ref}}"
-        mapFile: build/map.yml
-
-
-  publish:
-    needs: setup
-    name: "ECR Image Upload"
-    runs-on: ubuntu-20.04
-    if: needs.setup.outputs.image != ''
-    outputs:
-      tag: ${{ steps.gitinfo.outputs.tag }}
-    steps:
-    - name: "Login to Amazon ECR"
-      id: login-ecr
-      uses: aws-actions/amazon-ecr-login@v1   
-
-    - name: debug
-      shell: bash
-      run: |
-        echo "image: ${{ needs.setup.outputs.image }}"
-
-    - name: "Create ECR"
-      uses: epimorphics/github-actions/create-ecr-action@v2
-      with:
-        image: ${{ needs.setup.outputs.image }}
-
-    - name: "Get git tag"
-      id: gitinfo
-      uses: epimorphics/github-actions/git-info@v2
-      with:
-        path: build
-
-    - name: "Publish image"
-      env:
-        IMAGE: ${{ steps.setup.outputs.image }}
-        TAG: ${{ steps.gitinfo.outputs.tag }}
-      run: |
-        cd build
-        make image publish
-        cd ..
-        rm -rf build
-      shell: bash
-
-
-  deploy:
-    needs: publish
-    name: "Ansible Deploy"
-    runs-on: ubuntu-20.04
-    if: needs.publish.outputs.tag != ''
-    steps:
     - name: "Ansible Deployment Repository Checkout"
       id: deploy
       uses: actions/checkout@v2
@@ -110,9 +100,9 @@ jobs:
       uses: epimorphics/github-actions/ansible-deploy-tag@v2
       with:
         secret: "${{ secrets.ANSIBLE_VAULT_PASSWORD }}"
-        stage: "${{ steps.mapper.outputs.target }}"
+        stage: "${{ needs.publish.outputs.target }}"
         name: "${{ env.ANSIBLE_TAG }}"
-        version: "${{ steps.gitinfo.outputs.tag }}"
+        version: "${{ needs.publish.outputs.tag }}"
 
     - name: "Git Commit"
       shell: bash
