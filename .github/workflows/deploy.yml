@@ -62,7 +62,7 @@ jobs:
         TAG: ${{ steps.gitinfo.outputs.tag }}
       shell: bash
       run: |
-        cd build
+#       cd build
         make image publish
 #       cd ..
 #       rm -rf build
@@ -74,6 +74,11 @@ jobs:
     runs-on: ubuntu-20.04
     if: needs.publish.outputs.tag != ''
     steps:
+    - name: "Debug"
+      shell: bash
+      run: |
+        ls -la
+
     - name: "SSH Setup: github -> aws"
       uses: shimataro/ssh-key-action@v2
       with:
