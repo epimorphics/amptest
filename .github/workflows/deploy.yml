@@ -67,7 +67,7 @@ jobs:
     - name: "Create ECR"
       uses: epimorphics/github-actions/create-ecr-action@v2
       with:
-        image: ${{ steps.mapper.outputs.image }}
+        image: ${{ steps.setup.outputs.image }}
 
     - name: "Get git tag"
       id: gitinfo
@@ -77,7 +77,7 @@ jobs:
 
     - name: "Publish image"
       env:
-        IMAGE: ${{ steps.mapper.outputs.image }}
+        IMAGE: ${{ steps.setup.outputs.image }}
         TAG: ${{ steps.gitinfo.outputs.tag }}
       run: |
         cd build
