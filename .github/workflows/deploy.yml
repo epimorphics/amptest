@@ -65,8 +65,8 @@ jobs:
         TAG: ${{ steps.gitinfo.outputs.tag }}
       shell: bash
       run: |
-#       cd build
         make image publish
+#       cd build
 #       cd ..
 #       rm -rf build
 
