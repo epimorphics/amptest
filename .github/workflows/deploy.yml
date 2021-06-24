@@ -27,13 +27,6 @@ jobs:
 #     with:
 #       path: build
 
-    - name: "Check for mapped deployment"
-      id: mapper
-      uses: epimorphics/github-actions/mapper@v2
-      with:
-        ref: "${{github.ref}}"
-#       mapFile: build/map.yml
-
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
@@ -45,18 +38,28 @@ jobs:
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1   
 
+    - name: "Check for mapped deployment"
+      id: mapper
+      uses: epimorphics/github-actions/mapper@v2
+      with:
+        ref: "${{github.ref}}"
+#       mapFile: build/map.yml
+
     - name: "Create ECR"
+      if: steps.mapper.outputs.image != ''
       uses: epimorphics/github-actions/create-ecr-action@v2
       with:
         image: ${{ steps.mapper.outputs.image }}
 
     - name: "Get git tag"
+      if: steps.mapper.outputs.image != ''
       id: gitinfo
       uses: epimorphics/github-actions/git-info@v2
 #     with:
 #       path: build
 
     - name: "Publish image"
+      if: steps.gitinfo.outputs.image != ''
       env:
         IMAGE: ${{ steps.mapper.outputs.image }}
         TAG: ${{ steps.gitinfo.outputs.tag }}
