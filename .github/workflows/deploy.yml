@@ -67,12 +67,12 @@ jobs:
     - name: debug
       shell: bash
       run: |
-        echo: "image: ${{ steps.setup.outputs.image }}"
+        echo "image: ${{ needs.setup.outputs.image }}"
 
     - name: "Create ECR"
       uses: epimorphics/github-actions/create-ecr-action@v2
       with:
-        image: ${{ steps.setup.outputs.image }}
+        image: ${{ needs.setup.outputs.image }}
 
     - name: "Get git tag"
       id: gitinfo
